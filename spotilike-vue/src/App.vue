@@ -1,11 +1,11 @@
 <script setup>
 import { ref } from 'vue';
-import Sidebar from './components/Sidebar.vue';
-import Login from './components/Login.vue';
-import Register from './components/Register.vue';
-import AlbumsList from './components/AlbumsList.vue';
-import ArtistsList from './components/ArtistsList.vue';
-import GenresList from './components/GenresList.vue';
+import Sidebar from './components/Sidebar/Sidebar.vue';
+import Login from './components/Login/Login.vue';
+import Register from './components/Register/Register.vue';
+import AlbumsList from './components/AlbumsList/AlbumsList.vue';
+import ArtistsList from './components/ArtistsList/ArtistsList.vue';
+import GenresList from './components/GenresList/GenresList.vue';
 import { authStore } from './stores/authStore';
 
 const currentView = ref('home'); // 'home', 'login', 'register'
