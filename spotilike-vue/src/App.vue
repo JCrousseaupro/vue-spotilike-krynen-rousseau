@@ -10,6 +10,15 @@ import { authStore } from './stores/authStore';
 
 const currentView = ref('home'); // 'home', 'login', 'register'
 
+const setView = (view) => {
+  // sécurité: si pas connecté, on force login
+  if (!authStore.isAuthenticated.value && view !== 'login' && view !== 'register') {
+    currentView.value = 'login';
+    return;
+  }
+  currentView.value = view;
+};
+
 const showLogin = () => {
   currentView.value = 'login';
 };
@@ -39,10 +48,12 @@ const handleLogout = () => {
 <template>
   <div class="app-container">
     <Sidebar
-      @show-login="showLogin"
-      @show-register="showRegister"
-      @logout="handleLogout"
-      @go-home="showHome"
+    :active-view="currentView"
+    @navigate="setView"
+    @show-login="showLogin"
+    @show-register="showRegister"
+    @logout="handleLogout"
+    @go-home="showHome"
     />
 
     <div class="main-wrapper">
@@ -70,8 +81,10 @@ const handleLogout = () => {
           </div>
 
           <main class="main-content">
-            <GenresList />
-            <AlbumsList />
+            <GenresList v-if="currentView === 'genres'" />
+            <AlbumsList v-if="currentView === 'albums'" />
+            <ArtistsList v-if="currentView === 'artists'" />
+            <SongsList v-if="currentView === 'songs'" />
           </main>
         </div>
 

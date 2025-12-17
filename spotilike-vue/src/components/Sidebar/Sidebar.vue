@@ -5,14 +5,23 @@
     </div>
 
     <nav class="sidebar-nav" v-if="authStore.isAuthenticated.value">
-      <div class="nav-item active">
+      <div class="nav-item" :class="{ active: activeView === 'home' }" @click="emit('navigate', 'home')">
         <span class="label">Accueil</span>
       </div>
-      <div class="nav-item">
-        <span class="label">Genres</span>
+      <div class="nav-item" :class="{ active: activeView === 'genres' }" @click="emit('navigate', 'genres')">
+      <span class="label">Genres</span>
       </div>
-      <div class="nav-item">
+
+      <div class="nav-item" :class="{ active: activeView === 'albums' }" @click="emit('navigate', 'albums')">
         <span class="label">Albums</span>
+      </div>
+
+      <div class="nav-item" :class="{ active: activeView === 'artists' }" @click="emit('navigate', 'artists')">
+        <span class="label">Artistes</span>
+      </div>
+
+      <div class="nav-item" :class="{ active: activeView === 'songs' }" @click="emit('navigate', 'songs')">
+        <span class="label">Songs</span>
       </div>
     </nav>
 
@@ -39,7 +48,11 @@
 import { authStore } from '../../stores/authStore';
 import { authService } from '../../services/authService';
 
-const emit = defineEmits(['show-login', 'show-register', 'logout', 'go-home']);
+const props = defineProps({
+  activeView: { type: String, default: 'home' }
+});
+
+const emit = defineEmits(['show-login', 'show-register', 'logout', 'go-home', 'navigate']);
 
 const handleLogout = () => {
   authService.logout();
