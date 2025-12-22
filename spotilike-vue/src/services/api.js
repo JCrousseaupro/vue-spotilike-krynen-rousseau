@@ -73,6 +73,16 @@ export const artistsService = {
   getArtistSongs(id) {
     return apiClient.get(`/artists/${id}/songs`);
   },
+
+  // 17. GET /api/artists - Récupère la liste de tous les artistes
+  getAllArtists() {
+    return apiClient.get('/artists');
+  },
+
+  // 16. POST /api/artists - Ajout d'un artiste
+  createArtist(artistData) {
+    return apiClient.post('/artists', artistData);
+  },
   
   // 10. PUT /api/artists/:id - Modification de l'artiste précisé par :id
   updateArtist(id, artistData) {

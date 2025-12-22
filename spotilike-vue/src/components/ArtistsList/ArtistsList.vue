@@ -42,8 +42,10 @@ const fetchArtists = async () => {
   try {
     loading.value = true;
     error.value = null;
+
     const response = await artistsService.getAllArtists();
-    artists.value = response.data;
+    artists.value = response.data.data;
+
   } catch (err) {
     error.value = err.message || 'Impossible de charger les artistes';
     console.error('Erreur lors du chargement des artistes:', err);
