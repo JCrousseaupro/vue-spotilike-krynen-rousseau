@@ -1,19 +1,25 @@
 <template>
   <div class="artists-container">
-    <h2>Artistes</h2>
-    
+    <h2>Artistes </h2>
+    <div class="flex-container">
+      <modalAddArtists v-if="showCreateModal" @close="showCreateModal = false" @created="handleCreateArtist" />
+      <span class="material-symbols-outlined" @click="createArtist">add_circle</span>
+      <h3>Créer un artiste</h3>
+    </div>
+
+
     <div v-if="loading" class="loading">
       Chargement des artistes...
     </div>
-    
+
     <div v-else-if="error" class="error">
       Erreur : {{ error }}
     </div>
-    
+
     <div v-else-if="artists.length === 0" class="no-data">
       Aucun artiste trouvé
     </div>
-    
+
     <div v-else class="artists-grid">
       <div v-for="artist in artists" :key="artist.id" class="artist-card">
         <div class="artist-avatar">
@@ -33,6 +39,23 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { artistsService } from '../../services/api';
+import modalAddArtists from './addArtists/modalAddArtists.vue';
+const showCreateModal = ref(false);
+
+const createArtist = () => {
+  showCreateModal.value = true;
+};
+
+const handleCreateArtist = async (payload) => {
+  try {
+    await artistsService.createArtist(payload);
+    showCreateModal.value = false;
+    await fetchArtists(); // refresh liste
+  } catch (err) {
+    console.error('Erreur createArtist:', err);
+  }
+};
+
 
 const artists = ref([]);
 const loading = ref(true);
