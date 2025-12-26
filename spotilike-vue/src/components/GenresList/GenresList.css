@@ -1,16 +1,13 @@
 .genres-container {
-    padding: 20px 0 30px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 30px;
+    padding: 20px;
     max-width: 100%;
 }
 
 h2 {
     color: #1db954;
-    margin-bottom: 30px;
-    font-size: 2.5em;
+    margin-bottom: 20px;
+    font-size: 2em;
     font-weight: 700;
-    letter-spacing: -0.5px;
 }
 
 .loading,
@@ -28,19 +25,20 @@ h2 {
 .genres-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 12px;
     margin-top: 20px;
 }
 
 .genre-tag {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
-    padding: 16px 32px;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 1.1em;
-    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.92);
+    padding: 10px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95em;
+    border: 1px solid rgba(0, 195, 255, 0.20);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.20);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -54,14 +52,16 @@ h2 {
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
 }
 
 .genre-tag:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+    transform: translateY(-2px);
+    border-color: rgba(0, 195, 255, 0.50);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34), 0 0 18px rgba(0, 195, 255, 0.16);
 }
 
 .genre-tag:hover::before {
@@ -72,12 +72,12 @@ h2 {
 /* Desktop */
 @media (min-width: 1200px) {
     .genres-list {
-        gap: 25px;
+        gap: 12px;
     }
 
     .genre-tag {
-        padding: 18px 36px;
-        font-size: 1.15em;
+        padding: 10px 16px;
+        font-size: 0.98em;
     }
 }
 
@@ -88,27 +88,35 @@ h2 {
     }
 
     .genre-tag {
-        padding: 14px 28px;
-        font-size: 1em;
+        padding: 10px 14px;
+        font-size: 0.95em;
     }
 }
 
 /* Mobile */
 @media (max-width: 768px) {
     .genres-container {
-        padding: 20px 0;
+        padding: 20px;
     }
 
     .genres-list {
-        gap: 15px;
+        gap: 10px;
     }
 
     .genre-tag {
-        padding: 12px 24px;
-        font-size: 0.95em;
+        padding: 9px 12px;
+        font-size: 0.92em;
     }
 
     h2 {
         font-size: 1.8em;
     }
 }
+
+/* Petites variations de couleurs, sans fluo (palette douce) */
+.genre-tag:nth-child(6n + 1) { border-color: rgba(0, 195, 255, 0.28); }
+.genre-tag:nth-child(6n + 2) { border-color: rgba(120, 90, 255, 0.28); }
+.genre-tag:nth-child(6n + 3) { border-color: rgba(255, 218, 6, 0.24); }
+.genre-tag:nth-child(6n + 4) { border-color: rgba(255, 107, 107, 0.24); }
+.genre-tag:nth-child(6n + 5) { border-color: rgba(29, 185, 84, 0.24); }
+.genre-tag:nth-child(6n + 6) { border-color: rgba(255, 255, 255, 0.18); }
