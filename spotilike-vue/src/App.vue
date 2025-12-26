@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Sidebar from './components/Sidebar/Sidebar.vue';
 import Login from './components/Login/Login.vue';
 import Register from './components/Register/Register.vue';
@@ -7,8 +7,51 @@ import AlbumsList from './components/AlbumsList/AlbumsList.vue';
 import ArtistsList from './components/ArtistsList/ArtistsList.vue';
 import GenresList from './components/GenresList/GenresList.vue';
 import { authStore } from './stores/authStore';
+import apiClient, { albumsService, artistsService } from './services/api';
 
-const currentView = ref('home'); // 'home', 'login', 'register'
+const currentView = ref('home'); // 'home', 'login', 'register', 'genres', 'albums', 'artists', 'songs'
+
+const statsLoading = ref(false);
+const albumsCount = ref(null);
+const artistsCount = ref(null);
+const songsCount = ref(null);
+
+const fetchHomeStats = async () => {
+  if (!authStore.isAuthenticated.value) return;
+
+  statsLoading.value = true;
+  try {
+    const [albumsRes, artistsRes] = await Promise.all([
+      albumsService.getAllAlbums(),
+      artistsService.getAllArtists()
+    ]);
+
+    const albums = albumsRes.data?.data || albumsRes.data || [];
+    const artists = artistsRes.data?.data || artistsRes.data || [];
+
+    albumsCount.value = Array.isArray(albums) ? albums.length : 0;
+    artistsCount.value = Array.isArray(artists) ? artists.length : 0;
+
+    // Songs count: try dedicated endpoint first; fallback to summing per-album songs.
+    try {
+      const songsRes = await apiClient.get('/songs');
+      const songs = songsRes.data?.data || songsRes.data || [];
+      songsCount.value = Array.isArray(songs) ? songs.length : 0;
+    } catch {
+      const songLists = await Promise.all(
+        (Array.isArray(albums) ? albums : []).map((a) =>
+          albumsService
+            .getAlbumSongs(a.id)
+            .then((r) => r.data?.data || r.data || [])
+            .catch(() => [])
+        )
+      );
+      songsCount.value = songLists.reduce((sum, list) => sum + (Array.isArray(list) ? list.length : 0), 0);
+    }
+  } finally {
+    statsLoading.value = false;
+  }
+};
 
 const setView = (view) => {
   // sécurité: si pas connecté, on force login
@@ -43,6 +86,18 @@ const handleRegisterSuccess = (user) => {
 const handleLogout = () => {
   currentView.value = 'home';
 };
+
+watch(
+  () => [authStore.isAuthenticated.value, currentView.value],
+  ([isAuth, view]) => {
+    if (isAuth && view === 'home') fetchHomeStats();
+  },
+  { immediate: true }
+);
+
+onMounted(() => {
+  if (authStore.isAuthenticated.value && currentView.value === 'home') fetchHomeStats();
+});
 </script>
 
 <template>
@@ -81,10 +136,60 @@ const handleLogout = () => {
           </div>
 
           <main class="main-content">
-            <GenresList v-if="currentView === 'genres'" />
-            <AlbumsList v-if="currentView === 'albums'" />
-            <ArtistsList v-if="currentView === 'artists'" />
-            <SongsList v-if="currentView === 'songs'" />
+            <!-- HOME -->
+            <div v-if="currentView === 'home'" class="home-grid">
+              <button class="home-tile" type="button" @click="setView('genres')">
+                <span class="material-symbols-outlined home-icon">category</span>
+                <div class="home-title">Genres</div>
+                <div class="home-subtitle">Explorer les styles</div>
+              </button>
+
+              <button class="home-tile" type="button" @click="setView('albums')">
+                <span class="material-symbols-outlined home-icon">album</span>
+                <div class="home-title">Albums</div>
+                <div class="home-subtitle">Parcourir la collection</div>
+              </button>
+
+              <button class="home-tile" type="button" @click="setView('artists')">
+                <span class="material-symbols-outlined home-icon">person</span>
+                <div class="home-title">Artistes</div>
+                <div class="home-subtitle">Voir les artistes</div>
+              </button>
+
+              <div class="stats-title">
+                <div class="stats-title-row">
+                  <span class="material-symbols-outlined stats-icon">monitoring</span>
+                  <h2 class="stats-heading">Statistiques générales</h2>
+                </div>
+                <p class="stats-subheading">Un aperçu rapide de ta bibliothèque</p>
+              </div>
+
+              <div class="home-stats">
+                <div class="stat-card">
+                  <div class="stat-label">Albums</div>
+                  <div class="stat-value">{{ statsLoading ? '…' : (albumsCount ?? '—') }}</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Artistes</div>
+                  <div class="stat-value">{{ statsLoading ? '…' : (artistsCount ?? '—') }}</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Songs</div>
+                  <div class="stat-value">{{ statsLoading ? '…' : (songsCount ?? '—') }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- VUES -->
+            <GenresList v-else-if="currentView === 'genres'" />
+            <AlbumsList v-else-if="currentView === 'albums'" />
+            <ArtistsList v-else-if="currentView === 'artists'" />
+
+            <!-- TODO Songs -->
+            <div v-else-if="currentView === 'songs'" class="todo-view">
+              <h2>Songs</h2>
+              <p>TODO: supprimer Songs et afficher les songs depuis un album (au clic).</p>
+            </div>
           </main>
         </div>
 
@@ -228,6 +333,116 @@ const handleLogout = () => {
   padding: 20px 0 60px;
 }
 
+.home-grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.home-stats{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.stats-title{
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.stats-title-row{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stats-icon{
+  color: #1db954;
+  font-size: 22px;
+}
+
+.stats-heading{
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.2em;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+}
+
+.stats-subheading{
+  margin: 6px 0 0 0;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.95em;
+}
+
+.stat-card{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+}
+
+.stat-label{
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-bottom: 6px;
+}
+
+.stat-value{
+  color: #ffffff;
+  font-size: 1.6em;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.home-tile{
+  text-align: left;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(29,185,84,0.18);
+  border-radius: 14px;
+  padding: 18px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.home-tile:hover{
+  transform: translateY(-3px);
+  border-color: rgba(29,185,84,0.5);
+  box-shadow: 0 16px 46px rgba(0,0,0,0.38), 0 0 22px rgba(29,185,84,0.16);
+}
+
+.home-icon{
+  font-size: 34px;
+  color: #1db954;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.home-title{
+  font-size: 1.15em;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.home-subtitle{
+  color: rgba(255,255,255,0.7);
+  font-size: 0.95em;
+}
+
+.todo-view h2{
+  color: #1db954;
+  margin-bottom: 10px;
+}
+
+.todo-view p{
+  color: rgba(255,255,255,0.7);
+}
+
 .footer {
   text-align: center;
   /* Full width of the right side (ignore content padding) */
@@ -288,5 +503,15 @@ const handleLogout = () => {
     margin-right: -20px;
     padding: 10px 20px;
   }
+}
+
+@media (max-width: 1024px){
+  .home-grid{ grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+  .home-stats{ grid-template-columns: repeat(3, minmax(160px, 1fr)); }
+}
+
+@media (max-width: 640px){
+  .home-grid{ grid-template-columns: 1fr; }
+  .home-stats{ grid-template-columns: 1fr; }
 }
 </style>

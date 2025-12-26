@@ -11,7 +11,6 @@
       <div class="nav-item" :class="{ active: activeView === 'genres' }" @click="emit('navigate', 'genres')">
       <span class="label">Genres</span>
       </div>
-
       <div class="nav-item" :class="{ active: activeView === 'albums' }" @click="emit('navigate', 'albums')">
         <span class="label">Albums</span>
       </div>
