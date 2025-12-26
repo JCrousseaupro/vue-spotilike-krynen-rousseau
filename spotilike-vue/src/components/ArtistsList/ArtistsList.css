@@ -60,6 +60,7 @@ h3 {
     display: flex;
     align-items: center;
     gap: 14px;
+    position: relative;
   }
   
   .artist-card:hover{
@@ -96,6 +97,56 @@ h3 {
     line-height: 1.4;
   }
 
+/* Bouton delete (position + look) */
+.btn-delete-artist{
+    position: absolute;
+    top: -10px;
+    right: -10px;
+  
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+  
+    border: 1px solid #ff4444;
+    background: #121212;   /* fond plein */
+    color: #ff4444;
+  
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+  
+    box-shadow: 0 8px 18px rgba(0,0,0,0.45);
+    transition: opacity .15s ease, transform .15s ease, background .15s ease, color .15s ease;
+  }
+  
+  /* Hover du bouton */
+  .btn-delete-artist:hover{
+    transform: scale(1.06);
+    background: #ff4444;
+    color: #ffffff;
+  }
+  
+  /* ERGO: caché par défaut (desktop) */
+  .btn-delete-artist{
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  /* Visible au survol de la card + au clavier */
+  .artist-card:hover .btn-delete-artist,
+  .artist-card:focus-within .btn-delete-artist{
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Mobile / touch (pas de hover) => toujours visible */
+  @media (hover: none){
+    .btn-delete-artist{
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
 .material-symbols-outlined {
     color: #1db954;
     font-size: 2em;

@@ -3,6 +3,8 @@
     <h2>Artistes </h2>
     <div class="flex-container">
       <modalAddArtists v-if="showCreateModal" @close="showCreateModal = false" @created="handleCreateArtist" />
+      <modalDeleteArtist v-if="showDeleteModal" :artist="artistToDelete" @close="showDeleteModal = false"
+        @confirm="confirmDelete" />
       <span class="material-symbols-outlined" @click="createArtist">add_circle</span>
       <h3>Créer un artiste</h3>
     </div>
@@ -22,9 +24,14 @@
 
     <div v-else class="artists-grid">
       <div v-for="artist in artists" :key="artist.id" class="artist-card">
+        <button type="button" class="btn-delete-artist" title="Supprimer" @click.stop="askDelete(artist)">
+          ✕
+        </button>
+
         <div class="artist-avatar">
           {{ artist.name ? artist.name.charAt(0).toUpperCase() : '?' }}
         </div>
+
         <div class="artist-info">
           <h3>{{ artist.name }}</h3>
           <p class="artist-bio" v-if="artist.bio">
@@ -40,7 +47,11 @@
 import { ref, onMounted } from 'vue';
 import { artistsService } from '../../services/api';
 import modalAddArtists from './addArtists/modalAddArtists.vue';
+import modalDeleteArtist from './modalDeleteArtists/modalDeleteArtist.vue';
+
 const showCreateModal = ref(false);
+const showDeleteModal = ref(false);
+const artistToDelete = ref(null);
 
 const createArtist = () => {
   showCreateModal.value = true;
@@ -56,6 +67,21 @@ const handleCreateArtist = async (payload) => {
   }
 };
 
+const askDelete = (artist) => {
+  artistToDelete.value = artist;
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async () => {
+  try {
+    await artistsService.deleteArtist(artistToDelete.value.id);
+    showDeleteModal.value = false;
+    artistToDelete.value = null;
+    await fetchArtists();
+  } catch (err) {
+    console.error('Erreur deleteArtist:', err);
+  }
+};
 
 const artists = ref([]);
 const loading = ref(true);
