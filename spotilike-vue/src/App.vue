@@ -102,29 +102,20 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
-    <Sidebar
-    :active-view="currentView"
-    @navigate="setView"
-    @show-login="showLogin"
-    @show-register="showRegister"
-    @logout="handleLogout"
-    @go-home="showHome"
-    />
+    <Sidebar :active-view="currentView" @navigate="setView" @show-login="showLogin" @show-register="showRegister"
+      @logout="handleLogout" @go-home="showHome" />
 
     <div class="main-wrapper">
       <!-- Vue Login -->
-      <Login
-        v-if="currentView === 'login'"
-        @login-success="handleLoginSuccess"
-        @switch-to-register="showRegister"
-      />
+      <div v-if="currentView === 'login'" class="auth-page">
+        <Login @login-success="handleLoginSuccess" @switch-to-register="showRegister" />
+      </div>
 
       <!-- Vue Register -->
-      <Register
-        v-else-if="currentView === 'register'"
-        @register-success="handleRegisterSuccess"
-        @switch-to-login="showLogin"
-      />
+      <div v-else-if="currentView === 'register'" class="auth-page">
+        <Register @register-success="handleRegisterSuccess" @switch-to-login="showLogin" />
+      </div>
+
 
       <!-- Vue Home (Contenu principal) -->
       <div v-else class="content-area">
@@ -196,7 +187,10 @@ onMounted(() => {
         <!-- Si NON connecté : message d'accueil -->
         <div v-else class="welcome-guest">
           <div class="guest-content">
-            <h1 class="guest-title">Bienvenue sur Spotilike</h1>
+            <div class="guest-title-container">
+              <img class="brand-logo" src="./assets/logo.svg" alt="Spotilike" />
+              <h1 class="guest-title">Bienvenue sur Spotilike</h1>
+            </div>
             <p class="guest-message">Connectez-vous pour accéder à votre bibliothèque musicale</p>
             <div class="guest-actions">
               <button @click="showLogin" class="btn-guest-login">Se connecter</button>
@@ -205,10 +199,11 @@ onMounted(() => {
           </div>
         </div>
 
-        <footer class="footer">
-          <p>© 2025 Spotilike - Made with Vue.js</p>
-        </footer>
       </div>
+
+      <footer class="footer">
+        <p>© 2025 Spotilike</p>
+      </footer>
     </div>
   </div>
 </template>
@@ -219,6 +214,11 @@ onMounted(() => {
   min-height: 100vh;
   background: #0f0f0f;
   color: white;
+}
+
+.auth-page{
+  flex: 1;
+  min-height: 0;
 }
 
 .main-wrapper {
@@ -255,6 +255,12 @@ onMounted(() => {
   margin: 0 0 10px 0;
   color: #1db954;
   font-weight: 700;
+}
+
+.brand-logo {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
 }
 
 .subtitle {
@@ -333,37 +339,37 @@ onMounted(() => {
   padding: 20px 0 60px;
 }
 
-.home-grid{
+.home-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 18px;
   margin-top: 10px;
 }
 
-.home-stats{
+.home-stats {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(160px, 1fr));
   gap: 14px;
 }
 
-.stats-title{
+.stats-title {
   grid-column: 1 / -1;
   margin-top: 4px;
 }
 
-.stats-title-row{
+.stats-title-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.stats-icon{
+.stats-icon {
   color: #1db954;
   font-size: 22px;
 }
 
-.stats-heading{
+.stats-heading {
   margin: 0;
   color: #ffffff;
   font-size: 1.2em;
@@ -371,76 +377,76 @@ onMounted(() => {
   letter-spacing: -0.3px;
 }
 
-.stats-subheading{
+.stats-subheading {
   margin: 6px 0 0 0;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255, 255, 255, 0.65);
   font-size: 0.95em;
 }
 
-.stat-card{
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
+.stat-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 14px;
   padding: 14px 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
 }
 
-.stat-label{
-  color: rgba(255,255,255,0.65);
+.stat-label {
+  color: rgba(255, 255, 255, 0.65);
   font-size: 0.9em;
   margin-bottom: 6px;
 }
 
-.stat-value{
+.stat-value {
   color: #ffffff;
   font-size: 1.6em;
   font-weight: 900;
   letter-spacing: -0.5px;
 }
 
-.home-tile{
+.home-tile {
   text-align: left;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(29,185,84,0.18);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(29, 185, 84, 0.18);
   border-radius: 14px;
   padding: 18px;
   color: #fff;
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
-.home-tile:hover{
+.home-tile:hover {
   transform: translateY(-3px);
-  border-color: rgba(29,185,84,0.5);
-  box-shadow: 0 16px 46px rgba(0,0,0,0.38), 0 0 22px rgba(29,185,84,0.16);
+  border-color: rgba(29, 185, 84, 0.5);
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.38), 0 0 22px rgba(29, 185, 84, 0.16);
 }
 
-.home-icon{
+.home-icon {
   font-size: 34px;
   color: #1db954;
   display: inline-block;
   margin-bottom: 10px;
 }
 
-.home-title{
+.home-title {
   font-size: 1.15em;
   font-weight: 800;
   margin-bottom: 6px;
 }
 
-.home-subtitle{
-  color: rgba(255,255,255,0.7);
+.home-subtitle {
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.95em;
 }
 
-.todo-view h2{
+.todo-view h2 {
   color: #1db954;
   margin-bottom: 10px;
 }
 
-.todo-view p{
-  color: rgba(255,255,255,0.7);
+.todo-view p {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .footer {
@@ -485,11 +491,11 @@ onMounted(() => {
   .main-content {
     padding: 20px;
   }
-  
+
   .welcome-section {
     padding: 40px 20px 20px;
   }
-  
+
   .subtitle {
     font-size: 1.5em;
   }
@@ -505,13 +511,23 @@ onMounted(() => {
   }
 }
 
-@media (max-width: 1024px){
-  .home-grid{ grid-template-columns: repeat(2, minmax(220px, 1fr)); }
-  .home-stats{ grid-template-columns: repeat(3, minmax(160px, 1fr)); }
+@media (max-width: 1024px) {
+  .home-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+
+  .home-stats {
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+  }
 }
 
-@media (max-width: 640px){
-  .home-grid{ grid-template-columns: 1fr; }
-  .home-stats{ grid-template-columns: 1fr; }
+@media (max-width: 640px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-stats {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
