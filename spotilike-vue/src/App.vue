@@ -216,18 +216,18 @@ onMounted(() => {
   color: white;
 }
 
-.auth-page{
+.auth-page {
   flex: 1;
-  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .main-wrapper {
   flex: 1;
   min-width: 0;
-  min-height: 100vh;
   background: linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%);
   overflow-x: hidden;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -451,17 +451,10 @@ onMounted(() => {
 
 .footer {
   text-align: center;
-  /* Full width of the right side (ignore content padding) */
-  margin-left: -40px;
-  margin-right: -40px;
   padding: 12px 40px;
   background: rgba(0, 0, 0, 0.35);
-  margin-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
 }
 
 .footer p {

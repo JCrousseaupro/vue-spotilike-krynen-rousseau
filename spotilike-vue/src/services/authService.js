@@ -1,6 +1,33 @@
 import apiClient from './api';
 import { authStore } from '../stores/authStore';
 
+/**
+ * Fonction helper pour formater les messages d'erreur
+ * Intercepte les erreurs techniques et retourne un message user-friendly
+ */
+const formatErrorMessage = (error) => {
+  // Si pas de réponse du serveur (serveur down, timeout, etc.)
+  if (!error.response) {
+    return 'Service temporairement indisponible. Notre équipe effectue une maintenance pour améliorer votre expérience. Veuillez réessayer dans quelques instants.';
+  }
+  
+  // Si erreur 500 (erreur serveur interne)
+  if (error.response.status === 500) {
+    return 'Service temporairement indisponible. Notre équipe effectue une maintenance pour améliorer votre expérience. Veuillez réessayer dans quelques instants.';
+  }
+  
+  // Si le message contient des termes techniques (base de données, etc.)
+  const errorMessage = error.response?.data?.message || '';
+  const technicalKeywords = ['database', 'sql', 'connection', 'ECONNREFUSED', 'timeout'];
+  
+  if (technicalKeywords.some(keyword => errorMessage.toLowerCase().includes(keyword))) {
+    return 'Service temporairement indisponible. Notre équipe effectue une maintenance pour améliorer votre expérience. Veuillez réessayer dans quelques instants.';
+  }
+  
+  // Sinon, retourner le message d'erreur du serveur ou un message par défaut
+  return errorMessage || 'Une erreur est survenue';
+};
+
 export const authService = {
   /**
    * Inscription d'un nouvel utilisateur
@@ -17,7 +44,7 @@ export const authService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Erreur lors de l\'inscription'
+        message: formatErrorMessage(error)
       };
     } finally {
       authStore.setLoading(false);
@@ -69,7 +96,7 @@ export const authService = {
       console.error('Erreur login:', error);
       return {
         success: false,
-        message: error.response?.data?.message || 'Erreur lors de la connexion'
+        message: formatErrorMessage(error)
       };
     } finally {
       authStore.setLoading(false);
@@ -134,7 +161,7 @@ export const authService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Erreur lors de la mise à jour'
+        message: formatErrorMessage(error)
       };
     } finally {
       authStore.setLoading(false);
