@@ -16,6 +16,11 @@
             <span>Pays</span>
             <input v-model="form.country" type="text" />
           </label>
+
+          <label class="field">
+            <span>Photo (URL)</span>
+            <input v-model="form.avatar" type="url" placeholder="https://..." />
+          </label>
   
           <label class="field">
             <span>Bio</span>
@@ -46,7 +51,8 @@
   const form = reactive({
     name: '',
     country: '',
-    bio: ''
+    bio: '',
+    avatar: ''
   });
   
   const submit = async () => {
