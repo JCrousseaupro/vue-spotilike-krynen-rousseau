@@ -5,6 +5,11 @@
       <modalAddArtists v-if="showCreateModal" @close="showCreateModal = false" @created="handleCreateArtist" />
       <modalDeleteArtist v-if="showDeleteModal" :artist="artistToDelete" @close="showDeleteModal = false"
         @confirm="confirmDelete" />
+      <ArtistDetailsModal 
+        v-if="showDetailsModal" 
+        :artist="artistToShow" 
+        @close="showDetailsModal = false" 
+      />
       <span class="material-symbols-outlined" @click="createArtist">add_circle</span>
       <h3>Créer un artiste</h3>
     </div>
@@ -23,13 +28,16 @@
     </div>
 
     <div v-else class="artists-grid">
-      <div v-for="artist in artists" :key="artist.id" class="artist-card">
+      <div v-for="artist in artists" :key="artist.id" class="artist-card" @click="showArtistDetails(artist)">
         <button type="button" class="btn-delete-artist" title="Supprimer" @click.stop="askDelete(artist)">
           ✕
         </button>
 
         <div class="artist-avatar">
-          {{ artist.name ? artist.name.charAt(0).toUpperCase() : '?' }}
+          <img v-if="artist.avatar" :src="artist.avatar" :alt="artist.name" class="artist-photo" />
+          <span v-else class="artist-initial">
+            {{ artist.name ? artist.name.charAt(0).toUpperCase() : '?' }}
+          </span>
         </div>
 
         <div class="artist-info">
@@ -48,10 +56,13 @@ import { ref, onMounted } from 'vue';
 import { artistsService } from '../../services/api';
 import modalAddArtists from './addArtists/modalAddArtists.vue';
 import modalDeleteArtist from './modalDeleteArtists/modalDeleteArtist.vue';
+import ArtistDetailsModal from './modalDetailsArtists/ArtistDetailsModal.vue';
 
 const showCreateModal = ref(false);
 const showDeleteModal = ref(false);
 const artistToDelete = ref(null);
+const showDetailsModal = ref(false);
+const artistToShow = ref(null);
 
 const createArtist = () => {
   showCreateModal.value = true;
@@ -81,6 +92,11 @@ const confirmDelete = async () => {
   } catch (err) {
     console.error('Erreur deleteArtist:', err);
   }
+};
+
+const showArtistDetails = (artist) => {
+  artistToShow.value = artist;
+  showDetailsModal.value = true;
 };
 
 const artists = ref([]);
