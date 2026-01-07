@@ -8,7 +8,7 @@ import ArtistsList from './components/ArtistsList/ArtistsList.vue';
 import { authStore } from './stores/authStore';
 import apiClient, { albumsService, artistsService } from './services/api';
 
-const currentView = ref('home'); // 'home', 'login', 'register', 'albums', 'artists', 'songs'
+const currentView = ref('home'); // 'home', 'login', 'register', 'albums', 'artists'
 
 const statsLoading = ref(false);
 const albumsCount = ref(null);
@@ -169,11 +169,6 @@ onMounted(() => {
             <AlbumsList v-else-if="currentView === 'albums'" />
             <ArtistsList v-else-if="currentView === 'artists'" />
 
-            <!-- TODO Songs -->
-            <div v-else-if="currentView === 'songs'" class="todo-view">
-              <h2>Songs</h2>
-              <p>TODO: supprimer Songs et afficher les songs depuis un album (au clic).</p>
-            </div>
           </main>
         </div>
 

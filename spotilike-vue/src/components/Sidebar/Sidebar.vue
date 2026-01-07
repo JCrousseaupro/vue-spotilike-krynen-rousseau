@@ -11,17 +11,13 @@
       <div class="nav-item" :class="{ active: activeView === 'home' }" @click="emit('navigate', 'home')">
         <span class="label">Accueil</span>
       </div>
-      
+
       <div class="nav-item" :class="{ active: activeView === 'albums' }" @click="emit('navigate', 'albums')">
         <span class="label">Albums</span>
       </div>
 
       <div class="nav-item" :class="{ active: activeView === 'artists' }" @click="emit('navigate', 'artists')">
         <span class="label">Artistes</span>
-      </div>
-
-      <div class="nav-item" :class="{ active: activeView === 'songs' }" @click="emit('navigate', 'songs')">
-        <span class="label">Songs</span>
       </div>
     </nav>
 
