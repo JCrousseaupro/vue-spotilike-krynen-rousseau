@@ -39,6 +39,10 @@ h2 {
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
 }
 
 .album-card::before {
@@ -62,6 +66,38 @@ h2 {
     transform: translateY(-3px);
     border-color: rgba(120, 90, 255, 0.55);
     box-shadow: 0 16px 46px rgba(0, 0, 0, 0.38), 0 0 22px rgba(120, 90, 255, 0.18);
+}
+
+/* Pochette d'album */
+.album-cover-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.album-cover-placeholder {
+    width: 120px;
+    height: 120px;
+    background: rgba(120, 90, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.album-initial {
+    font-size: 2em;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.album-info {
+    flex: 1;
+    text-align: left;
 }
 
 .album-info h3 {

@@ -28,6 +28,7 @@
     
     <div v-else class="albums-grid">
       <div v-for="album in filteredAlbums" :key="album.id" class="album-card">
+        <!-- Infos À GAUCHE -->
         <div class="album-info">
           <h3>{{ album.title || album.name }}</h3>
           <p class="album-artist">{{ album.artist_name || 'Artiste inconnu' }}</p>
@@ -35,6 +36,17 @@
           <p class="album-year" v-if="album.release_year">
             📅 {{ album.release_year }}
           </p>
+        </div>
+        
+        <!-- Pochette À DROITE -->
+        <img 
+          v-if="album.cover_image" 
+          :src="album.cover_image" 
+          :alt="album.title"
+          class="album-cover-img"
+        />
+        <div v-else class="album-cover-placeholder">
+          <span class="album-initial">{{ (album.title || album.name || '?').charAt(0).toUpperCase() }}</span>
         </div>
       </div>
     </div>
