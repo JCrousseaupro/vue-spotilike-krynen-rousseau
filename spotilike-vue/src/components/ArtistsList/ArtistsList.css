@@ -3,10 +3,12 @@
 }
 
 h2 {
-    color: #1db954;
-    margin-bottom: 20px;
-    font-size: 2em;
+  color: #1db954;
+  margin-bottom: 20px;
+  font-size: 2em;
+  font-weight: 700;
 }
+
 
 h3 {
     color: #1db954;

@@ -5,11 +5,10 @@ import Login from './components/Login/Login.vue';
 import Register from './components/Register/Register.vue';
 import AlbumsList from './components/AlbumsList/AlbumsList.vue';
 import ArtistsList from './components/ArtistsList/ArtistsList.vue';
-import GenresList from './components/GenresList/GenresList.vue';
 import { authStore } from './stores/authStore';
 import apiClient, { albumsService, artistsService } from './services/api';
 
-const currentView = ref('home'); // 'home', 'login', 'register', 'genres', 'albums', 'artists', 'songs'
+const currentView = ref('home'); // 'home', 'login', 'register', 'albums', 'artists', 'songs'
 
 const statsLoading = ref(false);
 const albumsCount = ref(null);
@@ -121,19 +120,14 @@ onMounted(() => {
       <div v-else class="content-area">
         <!-- Si connecté : afficher la bibliothèque -->
         <div v-if="authStore.isAuthenticated.value">
-          <div class="welcome-section">
-            <h1 class="welcome-title">Bonjour {{ authStore.currentUser.value?.username }} !</h1>
-            <p class="subtitle">Bienvenue sur Spotilike</p>
-          </div>
 
           <main class="main-content">
             <!-- HOME -->
             <div v-if="currentView === 'home'" class="home-grid">
-              <button class="home-tile" type="button" @click="setView('genres')">
-                <span class="material-symbols-outlined home-icon">category</span>
-                <div class="home-title">Genres</div>
-                <div class="home-subtitle">Explorer les styles</div>
-              </button>
+              <div class="welcome-section">
+                <h1 class="welcome-title">Bonjour {{ authStore.currentUser.value?.username }} !</h1>
+                <p class="subtitle">Bienvenue sur Spotilike</p>
+              </div>
 
               <button class="home-tile" type="button" @click="setView('albums')">
                 <span class="material-symbols-outlined home-icon">album</span>
@@ -172,7 +166,6 @@ onMounted(() => {
             </div>
 
             <!-- VUES -->
-            <GenresList v-else-if="currentView === 'genres'" />
             <AlbumsList v-else-if="currentView === 'albums'" />
             <ArtistsList v-else-if="currentView === 'artists'" />
 
@@ -243,6 +236,7 @@ onMounted(() => {
 }
 
 .welcome-section {
+  grid-column: 1 / -1;
   text-align: center;
   padding: 40px 60px 30px;
   background: linear-gradient(180deg, rgba(29, 185, 84, 0.1) 0%, transparent 100%);

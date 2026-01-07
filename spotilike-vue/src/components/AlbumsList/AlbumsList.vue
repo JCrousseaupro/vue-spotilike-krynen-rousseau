@@ -1,6 +1,18 @@
 <template>
   <div class="albums-container">
-    <h2>Albums</h2>
+    <div class="albums-header">
+      <h2>Albums</h2>
+      
+      <div class="filter-section">
+        <label for="genre-filter">Filtrer par genre :</label>
+        <select id="genre-filter" v-model="selectedGenre" class="genre-select">
+          <option value="">Tous les genres</option>
+          <option v-for="genre in uniqueGenres" :key="genre" :value="genre">
+            {{ genre }}
+          </option>
+        </select>
+      </div>
+    </div>
     
     <div v-if="loading" class="loading">
       Chargement des albums...
@@ -10,18 +22,18 @@
       Erreur : {{ error }}
     </div>
     
-    <div v-else-if="albums.length === 0" class="no-data">
+    <div v-else-if="filteredAlbums.length === 0" class="no-data">
       Aucun album trouvé
     </div>
     
     <div v-else class="albums-grid">
-      <div v-for="album in albums" :key="album.id" class="album-card">
+      <div v-for="album in filteredAlbums" :key="album.id" class="album-card">
         <div class="album-info">
           <h3>{{ album.title || album.name }}</h3>
           <p class="album-artist">{{ album.artist_name || 'Artiste inconnu' }}</p>
-          <p class="album-genre" v-if="album.genre_name">{{ album.genre_name }}</p>
+          <p class="album-genre" v-if="album.genre_name">🎵 {{ album.genre_name }}</p>
           <p class="album-year" v-if="album.release_year">
-            {{ album.release_year }}
+            📅 {{ album.release_year }}
           </p>
         </div>
       </div>
@@ -30,12 +42,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { albumsService } from '../../services/api';
 
 const albums = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const selectedGenre = ref('');
+
+// Liste unique des genres
+const uniqueGenres = computed(() => {
+  const genres = albums.value
+    .map(album => album.genre_name)
+    .filter(genre => genre);  // Enlever les null/undefined
+  return [...new Set(genres)].sort();
+});
+
+// Albums filtrés
+const filteredAlbums = computed(() => {
+  if (!selectedGenre.value) {
+    return albums.value;
+  }
+  return albums.value.filter(album => album.genre_name === selectedGenre.value);
+});
 
 const fetchAlbums = async () => {
   try {
