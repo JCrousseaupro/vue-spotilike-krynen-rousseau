@@ -162,6 +162,15 @@
     border-color: rgba(29, 185, 84, 0.3);
   }
   
+  .album-item {
+    cursor: pointer;
+  }
+  
+  .album-item:hover {
+    background: rgba(255, 218, 6, 0.1);
+    border-color: rgba(255, 218, 6, 0.4);
+  }
+  
   .song-main {
     display: flex;
     flex-direction: column;

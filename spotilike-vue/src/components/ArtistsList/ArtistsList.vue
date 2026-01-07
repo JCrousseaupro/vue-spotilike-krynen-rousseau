@@ -8,7 +8,14 @@
       <ArtistDetailsModal 
         v-if="showDetailsModal" 
         :artist="artistToShow" 
-        @close="showDetailsModal = false" 
+        @close="showDetailsModal = false"
+        @showAlbum="showAlbumDetails" 
+      />
+      <AlbumDetailsModal 
+        v-if="showAlbumModal" 
+        :album="albumToShow" 
+        @close="showAlbumModal = false"
+        @showArtist="showArtistDetailsFromAlbum" 
       />
       <span class="material-symbols-outlined" @click="createArtist">add_circle</span>
       <h3>Créer un artiste</h3>
@@ -57,12 +64,15 @@ import { artistsService } from '../../services/api';
 import modalAddArtists from './addArtists/modalAddArtists.vue';
 import modalDeleteArtist from './modalDeleteArtists/modalDeleteArtist.vue';
 import ArtistDetailsModal from './modalDetailsArtists/ArtistDetailsModal.vue';
+import AlbumDetailsModal from '../AlbumsList/modalDetailsAlbums/AlbumDetailsModal.vue';
 
 const showCreateModal = ref(false);
 const showDeleteModal = ref(false);
 const artistToDelete = ref(null);
 const showDetailsModal = ref(false);
 const artistToShow = ref(null);
+const showAlbumModal = ref(false);
+const albumToShow = ref(null);
 
 const createArtist = () => {
   showCreateModal.value = true;
@@ -97,6 +107,34 @@ const confirmDelete = async () => {
 const showArtistDetails = (artist) => {
   artistToShow.value = artist;
   showDetailsModal.value = true;
+};
+
+const showAlbumDetails = (album) => {
+  // Fermer le modal artiste
+  showDetailsModal.value = false;
+  
+  // Ouvrir le modal album
+  albumToShow.value = album;
+  showAlbumModal.value = true;
+};
+
+const showArtistDetailsFromAlbum = async (artistId) => {
+  try {
+    // Récupérer tous les artistes et filtrer AVANT de fermer le modal
+    const response = await artistsService.getAllArtists();
+    const allArtists = response.data.data || response.data;
+    artistToShow.value = allArtists.find(artist => artist.id === artistId);
+    
+    if (artistToShow.value) {
+      // Fermer le modal album et ouvrir le modal artiste
+      showAlbumModal.value = false;
+      showDetailsModal.value = true;
+    } else {
+      console.error('Artiste non trouvé avec l\'ID:', artistId);
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement de l\'artiste:', error);
+  }
 };
 
 const artists = ref([]);

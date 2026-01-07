@@ -12,7 +12,8 @@
     <ArtistDetailsModal 
       v-if="showArtistModal" 
       :artist="artistToShow" 
-      @close="showArtistModal = false" 
+      @close="showArtistModal = false"
+      @showAlbum="showAlbumDetailsFromArtist" 
     />
 
     <div class="albums-header">
@@ -121,15 +122,14 @@ const showAlbumDetails = (album) => {
 
 const showArtistDetails = async (artistId) => {
   try {
-    // Fermer le modal album
-    showDetailsModal.value = false;
-    
-    // Récupérer tous les artistes et filtrer
+    // Récupérer tous les artistes et filtrer AVANT de fermer le modal
     const response = await artistsService.getAllArtists();
     const artists = response.data.data || response.data;
     artistToShow.value = artists.find(artist => artist.id === artistId);
     
     if (artistToShow.value) {
+      // Fermer le modal album et ouvrir le modal artiste
+      showDetailsModal.value = false;
       showArtistModal.value = true;
     } else {
       console.error('Artiste non trouvé avec l\'ID:', artistId);
@@ -137,6 +137,15 @@ const showArtistDetails = async (artistId) => {
   } catch (error) {
     console.error('Erreur lors du chargement de l\'artiste:', error);
   }
+};
+
+const showAlbumDetailsFromArtist = (album) => {
+  // Fermer le modal artiste
+  showArtistModal.value = false;
+  
+  // Ouvrir le modal album
+  albumToShow.value = album;
+  showDetailsModal.value = true;
 };
 
 onMounted(() => {
