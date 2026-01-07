@@ -1,5 +1,12 @@
 <template>
   <div class="albums-container">
+    <!-- Modal de détails -->
+    <AlbumDetailsModal 
+      v-if="showDetailsModal" 
+      :album="albumToShow" 
+      @close="showDetailsModal = false" 
+    />
+
     <div class="albums-header">
       <h2>Albums</h2>
       
@@ -27,7 +34,7 @@
     </div>
     
     <div v-else class="albums-grid">
-      <div v-for="album in filteredAlbums" :key="album.id" class="album-card">
+      <div v-for="album in filteredAlbums" :key="album.id" class="album-card" @click="showAlbumDetails(album)">
         <!-- Infos À GAUCHE -->
         <div class="album-info">
           <h3>{{ album.title || album.name }}</h3>
@@ -56,11 +63,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { albumsService } from '../../services/api';
+import AlbumDetailsModal from './modalDetailsAlbums/AlbumDetailsModal.vue';
 
 const albums = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const selectedGenre = ref('');
+const showDetailsModal = ref(false);
+const albumToShow = ref(null);
 
 // Liste unique des genres
 const uniqueGenres = computed(() => {
@@ -91,6 +101,11 @@ const fetchAlbums = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const showAlbumDetails = (album) => {
+  albumToShow.value = album;
+  showDetailsModal.value = true;
 };
 
 onMounted(() => {
