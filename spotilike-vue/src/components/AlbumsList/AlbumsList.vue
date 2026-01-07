@@ -1,10 +1,18 @@
 <template>
   <div class="albums-container">
-    <!-- Modal de détails -->
+    <!-- Modal de détails album -->
     <AlbumDetailsModal 
       v-if="showDetailsModal" 
       :album="albumToShow" 
-      @close="showDetailsModal = false" 
+      @close="showDetailsModal = false"
+      @showArtist="showArtistDetails" 
+    />
+    
+    <!-- Modal de détails artiste -->
+    <ArtistDetailsModal 
+      v-if="showArtistModal" 
+      :artist="artistToShow" 
+      @close="showArtistModal = false" 
     />
 
     <div class="albums-header">
@@ -62,8 +70,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { albumsService } from '../../services/api';
+import { albumsService, artistsService } from '../../services/api';
 import AlbumDetailsModal from './modalDetailsAlbums/AlbumDetailsModal.vue';
+import ArtistDetailsModal from '../ArtistsList/modalDetailsArtists/ArtistDetailsModal.vue';
 
 const albums = ref([]);
 const loading = ref(true);
@@ -71,6 +80,8 @@ const error = ref(null);
 const selectedGenre = ref('');
 const showDetailsModal = ref(false);
 const albumToShow = ref(null);
+const showArtistModal = ref(false);
+const artistToShow = ref(null);
 
 // Liste unique des genres
 const uniqueGenres = computed(() => {
@@ -106,6 +117,26 @@ const fetchAlbums = async () => {
 const showAlbumDetails = (album) => {
   albumToShow.value = album;
   showDetailsModal.value = true;
+};
+
+const showArtistDetails = async (artistId) => {
+  try {
+    // Fermer le modal album
+    showDetailsModal.value = false;
+    
+    // Récupérer tous les artistes et filtrer
+    const response = await artistsService.getAllArtists();
+    const artists = response.data.data || response.data;
+    artistToShow.value = artists.find(artist => artist.id === artistId);
+    
+    if (artistToShow.value) {
+      showArtistModal.value = true;
+    } else {
+      console.error('Artiste non trouvé avec l\'ID:', artistId);
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement de l\'artiste:', error);
+  }
 };
 
 onMounted(() => {

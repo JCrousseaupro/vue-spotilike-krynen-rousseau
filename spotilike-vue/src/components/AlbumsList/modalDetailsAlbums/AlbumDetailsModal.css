@@ -108,6 +108,16 @@
     gap: 8px;
   }
   
+  .album-artist-name {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .album-artist-name:hover {
+    color: #ffda06;
+    transform: translateX(4px);
+  }
+  
   /* Section chansons */
   .songs-section {
     margin-top: 20px;

@@ -21,7 +21,7 @@
             </div>
   
             <div class="album-main-info">
-              <p class="album-artist-name" v-if="album?.artist_name">
+              <p class="album-artist-name" v-if="album?.artist_name" @click="$emit('showArtist', album.artist_id)">
                 <span class="icon">👤</span> {{ album.artist_name }}
               </p>
               <p class="album-genre-name" v-if="album?.genre_name">
@@ -71,7 +71,7 @@
     album: { type: Object, required: true }
   });
   
-  const emit = defineEmits(['close']);
+  const emit = defineEmits(['close', 'showArtist']);
   
   const songs = ref([]);
   const loadingSongs = ref(true);
